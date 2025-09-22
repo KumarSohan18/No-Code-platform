@@ -32,10 +32,10 @@ services:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - SERPAPI_API_KEY=${SERPAPI_API_KEY}
       - UPLOAD_DIRECTORY=/app/uploads
-      - CHROMA_PERSIST_DIRECTORY=/app/chroma_data
+      - CHROMA_PERSIST_DIRECTORY=/app/chroma_db
     volumes:
       - backend_uploads:/app/uploads
-      - backend_chroma:/app/chroma_data
+      - backend_chroma:/app/chroma_db
     ports:
       - "8000:8000"
     depends_on:
@@ -55,14 +55,14 @@ services:
       dockerfile: Dockerfile
     container_name: genai-frontend
     environment:
-      - VITE_API_BASE_URL=http://localhost:8000/api/v1
+      - VITE_API_BASE_URL=http://backend:8000/api/v1
     ports:
-      - "3000:3000"
+      - "5173:5173"
     depends_on:
       backend:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      test: ["CMD", "curl", "-f", "http://localhost:5173"]
       interval: 30s
       timeout: 10s
       retries: 3

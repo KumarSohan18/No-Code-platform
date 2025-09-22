@@ -1,6 +1,9 @@
 # Frontend Dockerfile
 FROM node:18-alpine
 
+# Install curl for health checks
+RUN apk add --no-cache curl
+
 # Set working directory
 WORKDIR /app
 
@@ -8,7 +11,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm ci
 
 # Copy source code
 COPY . .
@@ -20,11 +23,11 @@ RUN npm run build
 RUN npm install -g serve
 
 # Expose port
-EXPOSE 3000
+EXPOSE 5173
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:3000 || exit 1
+    CMD curl -f http://localhost:5173 || exit 1
 
 # Serve the built application
-CMD ["serve", "-s", "dist", "-l", "3000"]
+CMD ["serve", "-s", "dist", "-l", "5173"]

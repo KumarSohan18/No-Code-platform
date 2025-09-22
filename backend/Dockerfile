@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     g++ \
     libffi-dev \
     libssl-dev \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better caching
@@ -25,7 +26,7 @@ COPY . .
 RUN mkdir -p uploads
 
 # Create chroma directory
-RUN mkdir -p chroma_data
+RUN mkdir -p chroma_db
 
 # Expose port
 EXPOSE 8000
