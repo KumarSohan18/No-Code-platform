@@ -1,0 +1,5 @@
+/backend/.env
+/backend/uploads
+/backend/core/config.py
+/frontend/node_modules
+/myenv
