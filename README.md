@@ -1,5 +1,6 @@
 # GenAI Stack - No-Code/Low-Code AI Workflow Builder
 
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/a52b18e8-a45c-463a-b03b-ce735856d14a" />
 
 
 A full-stack web application that enables users to visually create and interact with intelligent workflows using drag-and-drop components. Users can build workflows that handle user input, extract knowledge from documents, interact with language models, and return answers through a chat interface.
