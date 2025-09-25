@@ -44,10 +44,15 @@ class LLMService:
             # Perform web search if requested
             web_results = []
             if use_web_search:
-                web_results = await self.web_search(query, num_results=3)
+                web_results = await self.web_search(query, num_results=10)
             
             # Prepare prompt with web search results
             prompt = self._build_prompt(query, context, web_results)
+            
+            # Log the full prompt for debugging
+            logger.info(f"=== FULL PROMPT SENT TO LLM ===")
+            logger.info(f"Prompt: {prompt}")
+            logger.info(f"=== END PROMPT ===")
             
             # Use GPT-5 nano for all requests
             if self.openai_client:
@@ -66,7 +71,10 @@ class LLMService:
         prompt_parts = []
         
         # Add system instruction
-        prompt_parts.append("You are a helpful AI assistant. Provide accurate, helpful, and concise responses.")
+        if web_results:
+            prompt_parts.append("You are a helpful AI assistant. Use the provided web search results to answer the user's query accurately and comprehensively. Format your response with proper line breaks, bullet points, and clear structure. If the web search results contain relevant information, use them to provide a detailed response. If the results don't contain enough information, let the user know what you found and suggest they try a different search.")
+        else:
+            prompt_parts.append("You are a helpful AI assistant. Provide accurate, helpful, and concise responses with proper formatting including line breaks and clear structure.")
         
         # Add context if available
         if context:
@@ -74,13 +82,16 @@ class LLMService:
         
         # Add web search results if available
         if web_results:
-            web_context = "Web search results:\n"
+            web_context = "IMPORTANT: Use the following web search results to answer the user's query. These results contain current, real-time information that should be used to provide an accurate and up-to-date response:\n\n"
             for i, result in enumerate(web_results, 1):
-                web_context += f"{i}. {result['title']}\n{result['snippet']}\nURL: {result['url']}\n\n"
+                web_context += f"Result {i}:\nTitle: {result['title']}\nContent: {result['snippet']}\nSource: {result['url']}\n\n"
             prompt_parts.append(web_context)
         
-        # Add user query
-        prompt_parts.append(f"User query: {query}")
+        # Add user query with formatting instructions
+        if "news" in query.lower():
+            prompt_parts.append(f"User query: {query}\n\nPlease format your response with:\n- Clear headlines\n- Bullet points for each news item\n- Proper line breaks between sections\n- Source attribution when using web search results")
+        else:
+            prompt_parts.append(f"User query: {query}")
         
         return "\n\n".join(prompt_parts)
     
@@ -184,10 +195,20 @@ class LLMService:
             
             import httpx
             
+            # Optimize query for better search results
+            optimized_query = query
+            if "news" in query.lower() and "hindu" in query.lower():
+                optimized_query = f"site:thehindu.com {query}"
+            elif "news" in query.lower():
+                optimized_query = f"{query} latest today"
+            
+            logger.info(f"Original query: {query}")
+            logger.info(f"Optimized query: {optimized_query}")
+            
             # SerpAPI endpoint
             url = "https://serpapi.com/search"
             params = {
-                "q": query,
+                "q": optimized_query,
                 "api_key": settings.SERPAPI_API_KEY,
                 "num": num_results,
                 "engine": "google"
@@ -210,6 +231,7 @@ class LLMService:
                     })
             
             logger.info(f"Found {len(results)} web search results for query: {query}")
+            logger.info(f"Web search results: {results}")
             return results
         
         except Exception as e:

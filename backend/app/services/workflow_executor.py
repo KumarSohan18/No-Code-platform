@@ -312,14 +312,14 @@ class WorkflowExecutor:
                 "status": "skipped"
             }
         
-        # Search vector database - Force lower threshold for better results
-        threshold = 0.3  # Always use 0.3 for better results
+        # Search vector database 
+        threshold = 0.3  
         logger.info(f"Searching for query: '{query_data['query']}' in collection: '{node.data.collection or 'default'}' with threshold: {threshold}")
         search_results = await self.vector_service.search(
             query=query_data["query"],
             collection_name=node.data.collection or "default",
             top_k=node.data.topK or 5,
-            threshold=threshold  # Force lower threshold for better results
+            threshold=threshold 
         )
         logger.info(f"Found {len(search_results)} search results")
         
@@ -369,6 +369,8 @@ class WorkflowExecutor:
         # Log model information
         logger.info(f"=== LLM ENGINE EXECUTION ===")
         logger.info(f"Model: {model} (forced to GPT-5 nano)")
+        logger.info(f"Web search enabled: {use_web_search}")
+        logger.info(f"Node data: {node.data}")
         
         response = await self.llm_service.generate_response(
             query=query_data["query"],

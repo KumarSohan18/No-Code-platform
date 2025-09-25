@@ -148,11 +148,15 @@ async def send_message(
         # Extract AI response
         ai_response = "Sorry, I couldn't process your request."
         if result.get("status") == "completed" and result.get("output"):
-            # Find output component result
+            # Find LLM component result first, then output component
             for node_id, output in result["output"].items():
-                if isinstance(output, dict) and output.get("type") == "output":
-                    ai_response = output.get("response", ai_response)
-                    break
+                if isinstance(output, dict):
+                    if output.get("type") == "llm_response":
+                        ai_response = output.get("response", ai_response)
+                        break
+                    elif output.get("type") == "output":
+                        ai_response = output.get("response", ai_response)
+                        break
         else:
             logger.warning(f"Workflow execution failed or no output: {result}")
             ai_response = f"Workflow execution failed: {result.get('error', 'Unknown error')}"

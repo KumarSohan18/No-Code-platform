@@ -17,6 +17,7 @@ class NodeData(BaseModel):
     threshold: Optional[float] = 0.7
     format: Optional[str] = "text"
     streaming: Optional[bool] = True
+    use_web_search: Optional[bool] = False
     
 
 class WorkflowNode(BaseModel):

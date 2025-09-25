@@ -38,7 +38,8 @@ const componentTypes = {
       model: 'gpt-5-nano-2025-08-07',
       maxTokens: 1000,
       apiKey: '',
-      useDefaultKey: true
+      useDefaultKey: true,
+      use_web_search: false
     }
   },
   knowledge: {
@@ -132,7 +133,7 @@ const InputNode = ({ data, selected, onDelete }) => (
   </div>
 )
 
-const LLMNode = ({ data, selected, onDelete }) => (
+const LLMNode = ({ data, selected, onDelete, onDataChange }) => (
   <div className={`custom-node llm-node ${selected ? 'selected' : ''}`}>
     <div className="node-header">
       <span className="node-icon">⚙️</span>
@@ -185,7 +186,10 @@ const LLMNode = ({ data, selected, onDelete }) => (
       </div>
       <div className="config-row">
         <label>WebSearch Tool</label>
-        <div className="toggle-switch active">
+        <div 
+          className={`toggle-switch ${data.use_web_search ? 'active' : ''}`}
+          onClick={() => onDataChange && onDataChange({ use_web_search: !data.use_web_search })}
+        >
           <div className="toggle-slider"></div>
         </div>
       </div>
@@ -555,13 +559,23 @@ function WorkflowBuilder({ onBack, stack, onWorkflowUpdate }) {
     }
   }, [selectedNode, setNodes, setEdges])
 
+  const updateNodeData = useCallback((nodeId, newData) => {
+    setNodes((nds) => 
+      nds.map((node) => 
+        node.id === nodeId 
+          ? { ...node, data: { ...node.data, ...newData } }
+          : node
+      )
+    )
+  }, [setNodes])
+
   // Create node types with delete functionality
   const nodeTypes = useMemo(() => ({
     input: (props) => <InputNode {...props} onDelete={onDeleteNode} />,
-    llm: (props) => <LLMNode {...props} onDelete={onDeleteNode} />,
+    llm: (props) => <LLMNode {...props} onDelete={onDeleteNode} onDataChange={(newData) => updateNodeData(props.id, newData)} />,
     knowledge: (props) => <KnowledgeNode {...props} onDelete={onDeleteNode} />,
     output: (props) => <OutputNode {...props} onDelete={onDeleteNode} />,
-  }), [onDeleteNode])
+  }), [onDeleteNode, updateNodeData])
 
   const onDragStart = (event, nodeType) => {
     event.dataTransfer.setData('application/reactflow', nodeType)
