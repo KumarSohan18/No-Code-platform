@@ -36,7 +36,7 @@ class Settings(BaseSettings):
     GEMINI_MODEL: str = "gemini-2.5-pro"
     
     # SerpAPI
-    SERPAPI_API_KEY: Optional[str] = "d9f70ddef0ade0af5d6cd7f6315941ec6881eed419ca99d2cee1355d05d15c8d"
+    SERPAPI_API_KEY: Optional[str] = None
     
     # ChromaDB
     CHROMA_PERSIST_DIRECTORY: str = "./chroma_db"
