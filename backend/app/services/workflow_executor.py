@@ -376,8 +376,9 @@ class WorkflowExecutor:
             query=query_data["query"],
             context=context_text,
             model=model,
-            max_tokens=node.data.maxTokens or 1000,
-            use_web_search=use_web_search
+            max_tokens=1000,
+            use_web_search=use_web_search,
+            web_search_results=node.data.webSearchResults or 10
         )
         
         logger.info(f"LLM response received: {response[:100]}...")

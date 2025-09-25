@@ -36,10 +36,8 @@ const componentTypes = {
     defaultData: {
       label: 'LLM Engine',
       model: 'gpt-5-nano-2025-08-07',
-      maxTokens: 1000,
-      apiKey: '',
-      useDefaultKey: true,
-      use_web_search: false
+      use_web_search: false,
+      webSearchResults: 10
     }
   },
   knowledge: {
@@ -157,35 +155,18 @@ const LLMNode = ({ data, selected, onDelete, onDataChange }) => (
     <div className="node-content">
       <div className="config-row">
         <label>Model</label>
-        <select className="config-select">
-          <option>GPT-5-nano</option>
-          <option>Gemini-2.5-pro</option>
+        <select 
+          className="config-select"
+          value={data.model || 'gpt-5-nano-2025-08-07'}
+          onChange={(e) => onDataChange && onDataChange({ model: e.target.value })}
+        >
+          <option value="gpt-5-nano-2025-08-07">GPT-5-nano</option>
+          <option value="gpt-4o">GPT-4o</option>
+          <option value="gemini-2.5-pro">Gemini-2.5-pro</option>
         </select>
       </div>
       <div className="config-row">
-        <label>API Key</label>
-        <div className="api-key-field">
-          <input type="password" placeholder="Enter API key or use default" />
-          <span className="eye-icon">👁️</span>
-        </div>
-      </div>
-      <div className="config-row">
-        <label>SERP API Key</label>
-        <div className="api-key-field">
-          <input type="password" placeholder="Enter SERP API key or use default" />
-          <span className="eye-icon">👁️</span>
-        </div>
-      </div>
-      <div className="config-row">
-        <label>Prompt</label>
-        <textarea 
-          className="prompt-textarea"
-          value="You are a helpful PDF assistant. Use web search if the PDF lacks context"
-          readOnly
-        />
-      </div>
-      <div className="config-row">
-        <label>WebSearch Tool</label>
+        <label>Web Search</label>
         <div 
           className={`toggle-switch ${data.use_web_search ? 'active' : ''}`}
           onClick={() => onDataChange && onDataChange({ use_web_search: !data.use_web_search })}
@@ -193,13 +174,20 @@ const LLMNode = ({ data, selected, onDelete, onDataChange }) => (
           <div className="toggle-slider"></div>
         </div>
       </div>
-      <div className="config-row">
-        <label>SERF API</label>
-        <div className="api-key-field">
-          <input type="password" value="************" readOnly />
-          <span className="eye-icon">👁️</span>
+      {data.use_web_search && (
+        <div className="config-row">
+          <label>Web Search Results</label>
+          <input 
+            type="number" 
+            className="config-input"
+            value={data.webSearchResults || 10}
+            onChange={(e) => onDataChange && onDataChange({ webSearchResults: parseInt(e.target.value) })}
+            placeholder="10"
+            min="1"
+            max="20"
+          />
         </div>
-      </div>
+      )}
     </div>
     
     {/* React Flow Handles for all edges */}

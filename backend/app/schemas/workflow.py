@@ -11,13 +11,13 @@ class NodeData(BaseModel):
     label: str
     placeholder: Optional[str] = None
     model: Optional[str] = None
-    maxTokens: Optional[int] = 1000
     collection: Optional[str] = None
     topK: Optional[int] = 5
     threshold: Optional[float] = 0.7
     format: Optional[str] = "text"
     streaming: Optional[bool] = True
     use_web_search: Optional[bool] = False
+    webSearchResults: Optional[int] = 10
     
 
 class WorkflowNode(BaseModel):

@@ -37,14 +37,15 @@ class LLMService:
         context: Optional[str] = None,
         model: str = "gpt-5-nano-2025-08-07",
         max_tokens: int = 1000,
-        use_web_search: bool = False
+        use_web_search: bool = False,
+        web_search_results: int = 10
     ) -> str:
         """Generate response using specified LLM"""
         try:
             # Perform web search if requested
             web_results = []
             if use_web_search:
-                web_results = await self.web_search(query, num_results=10)
+                web_results = await self.web_search(query, num_results=web_search_results)
             
             # Prepare prompt with web search results
             prompt = self._build_prompt(query, context, web_results)
